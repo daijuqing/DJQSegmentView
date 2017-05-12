@@ -8,8 +8,18 @@
 
 import UIKit
 
+protocol DJQTitlesViewDelegate:class{
+    
+    func titleView(_ titlesView :DJQTitlesView ,targetIndex :NSInteger)
+    
+}
+
 class DJQTitlesView: UIView {
 
+  
+
+    weak var titleViewDelegate:DJQTitlesViewDelegate!
+    
     fileprivate var currentIndex : NSInteger//当前选择的标题
     
     fileprivate var titles:[String]
@@ -128,11 +138,29 @@ extension DJQTitlesView{
     @objc fileprivate func titleViewClick(_ ges : UITapGestureRecognizer){
         
         let targetLabel = ges.view as! UILabel
-        let sourceLabel = titleLabels[currentIndex]
+
         
-        targetLabel.textColor = style.seletedColor
+        adjustTitlelabel(targetIndex: targetLabel.tag)
+       
+        
+        titleViewDelegate.titleView(self, targetIndex: currentIndex)
+
+       }
+
+    func adjustTitlelabel(targetIndex : NSInteger){
+        
+        
+        let sourceLabel = titleLabels[currentIndex]
+        let targetLabel = titleLabels[targetIndex]
+        
+//        if (sourceLabel.tag != targetIndex) {
         sourceLabel.textColor = style.normalColor
-        currentIndex = targetLabel.tag
+        targetLabel.textColor = style.seletedColor
+//        }
+        
+        
+        
+        
         
         if style.isScrollEnable {
             
@@ -148,17 +176,43 @@ extension DJQTitlesView{
             //右侧
             if offsetX  > scrollView.contentSize.width - scrollView.bounds.width {
                 
-               offsetX =  targetLabel.center.x - offsetX - style.iteamMargin * 0.5
+                offsetX =  targetLabel.center.x - offsetX - style.iteamMargin * 0.5
                 
             }
             scrollView.setContentOffset(CGPoint( x : offsetX, y :0), animated: true)
             
         }
+        
+            currentIndex = targetIndex
+
     }
-    
 }
 
 
+
+// MARK - DJQContentViewDelegate
+
+extension DJQTitlesView:DJQContentViewDelegate{
+    
+    func contentView(_ contentView: DJQContentView, targetIndex: NSInteger) {
+        
+        adjustTitlelabel(targetIndex: targetIndex)
+    }
+    
+    func contentView(_ contentView: DJQContentView, targetIndex: NSInteger, progress: CGFloat) { 
+        
+        let sourceLabel = titleLabels[currentIndex]
+        let targetLabel = titleLabels[targetIndex]
+        
+        let deltaRGB = UIColor.getRGBdelta(firstRGBColor: style.seletedColor, secondRGBColor: style.normalColor)
+        let sourceRGB = UIColor.getRGB(style.normalColor)
+        let currentRGB = UIColor.getRGB(style.seletedColor)
+        
+        targetLabel.textColor = UIColor(r: sourceRGB().0 + deltaRGB.0 * progress , g: sourceRGB().1 + deltaRGB.1 * progress, b: sourceRGB().2 + deltaRGB.2 * progress)
+
+        sourceLabel.textColor = UIColor(r: currentRGB().0 - deltaRGB.0 * progress, g: currentRGB().1 - deltaRGB.1 * progress, b: currentRGB().2 - deltaRGB.2 * progress)
+    }
+}
 
 
 

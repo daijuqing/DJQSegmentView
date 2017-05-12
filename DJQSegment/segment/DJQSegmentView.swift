@@ -53,6 +53,9 @@ extension DJQSegmentView{
         
         let contentView = DJQContentView(frame: contentFrame, childVcs: childVcs, parentVc: parentVc)
         addSubview(contentView)
+        
+        titleView.titleViewDelegate = contentView
+        contentView.contentDelegate = titleView
     }
     
 }
