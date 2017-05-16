@@ -27,6 +27,8 @@ class DJQContentView: UIView {
     fileprivate var childVcs : [UIViewController]
     fileprivate var parentVc : UIViewController
     
+    fileprivate var isForbiScroll :Bool
+    
     fileprivate var statOffset:CGFloat
     
     fileprivate lazy var collectionView : UICollectionView = {
@@ -56,6 +58,7 @@ class DJQContentView: UIView {
         self.childVcs = childVcs
         self.parentVc = parentVc
         self.statOffset = 0.0
+        self.isForbiScroll = false
         super.init(frame: frame)
         setupUI()
     }
@@ -127,6 +130,10 @@ extension DJQContentView:UICollectionViewDelegate{
     
     func contentEndScroll(){
         
+        guard !isForbiScroll else {
+            return
+        }
+        
         let currentIndex = collectionView.contentOffset.x / collectionView.bounds.width
         
         contentDelegate.contentView(self, targetIndex: NSInteger(currentIndex))
@@ -140,6 +147,11 @@ extension DJQContentView:UICollectionViewDelegate{
     }
     
     func scrollViewDidScroll(_ scrollView: UIScrollView) {
+        
+        
+        guard !isForbiScroll else {
+            return
+        }
         
         guard statOffset != CGFloat(scrollView.contentOffset.x) else {
             
@@ -181,12 +193,9 @@ extension DJQContentView:UICollectionViewDelegate{
         }
         
         
-        print(progress)
 
-        guard progress < 1 else {
-            
-            return
-        }
+      
+        
         
         contentDelegate.contentView(self, targetIndex: targetIndex, progress: progress)
     }
@@ -201,8 +210,12 @@ extension DJQContentView : DJQTitlesViewDelegate{
     
     func titleView(_ titlesView: DJQTitlesView, targetIndex: NSInteger) {
         
+        isForbiScroll = true
+        
         let indexPath = IndexPath(item: targetIndex, section: 0)
         collectionView.scrollToItem(at: indexPath, at: .left, animated: false)
+        
+        isForbiScroll = false
         
     }
     

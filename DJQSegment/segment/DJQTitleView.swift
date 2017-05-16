@@ -25,6 +25,7 @@ class DJQTitlesView: UIView {
     fileprivate var titles:[String]
     fileprivate var style:DJQTitleStyle
     
+    
     //标题label数组
     fileprivate lazy var titleLabels : [UILabel] = [UILabel]()
     
@@ -36,6 +37,16 @@ class DJQTitlesView: UIView {
         scrollView.scrollsToTop = false
         
         return scrollView
+    }()
+    
+    fileprivate lazy var scrollLine:UIView = {
+        let scrollLine = UIView()
+        
+        scrollLine.frame.size.height = self.style.scrollLineHeight
+        scrollLine.frame.origin.y = self.bounds.size.height - self.style.scrollLineHeight
+        scrollLine.backgroundColor = self.style.scrollLineColor
+        
+        return scrollLine
     }()
     
     
@@ -61,6 +72,9 @@ extension DJQTitlesView{
         
         setupTitleLabels()
         setupTitleFrame()
+        
+        scrollView.addSubview(scrollLine)
+        
     }
     
     fileprivate func setupTitleLabels()
@@ -110,17 +124,29 @@ extension DJQTitlesView{
                 {
                     x = style.iteamMargin * 0.5
                     
+                    scrollLine.frame.origin.x = x
+                    scrollLine.frame.size.width = w
+                    
                 }else
                 {
                     let preLabel = titleLabels[i - 1]
                     x = preLabel.frame.maxX + style.iteamMargin * 0.5
                 }
                 
+                
+                
             
             }else
             {//不能滚动
                 w = bounds.width / CGFloat(count)
                 x = w * CGFloat(i)
+                
+                if i == 0 {
+                    
+                    scrollLine.frame.origin.x = 0
+                    scrollLine.frame.size.width = w
+                    
+                }
    
             }
             label.frame = CGRect(x: x, y: y, width: w, height: h)
@@ -141,6 +167,15 @@ extension DJQTitlesView{
 
         
         adjustTitlelabel(targetIndex: targetLabel.tag)
+
+        UIView.animate(withDuration: 0.25, animations: {
+            
+            self.scrollLine.frame.size.width = targetLabel.frame.size.width;
+            self.scrollLine.frame.origin.x = targetLabel.frame.origin.x
+            
+        })
+        
+        
        
         
         titleViewDelegate.titleView(self, targetIndex: currentIndex)
@@ -150,20 +185,17 @@ extension DJQTitlesView{
     func adjustTitlelabel(targetIndex : NSInteger){
         
         
+        
+        
         let sourceLabel = titleLabels[currentIndex]
         
         print("currentIndex",currentIndex)
 
         let targetLabel = titleLabels[targetIndex]
-        
+        sourceLabel.textColor = style.normalColor
+
         targetLabel.textColor = style.seletedColor
 
-        sourceLabel.textColor = style.normalColor
-        
-        
-        
-        
-        
         
         if style.isScrollEnable {
             
@@ -182,7 +214,11 @@ extension DJQTitlesView{
                 offsetX =  targetLabel.center.x - offsetX - style.iteamMargin * 0.5
                 
             }
+            
+            
             scrollView.setContentOffset(CGPoint( x : offsetX, y :0), animated: true)
+
+            
             
         }
             currentIndex = targetIndex
@@ -216,7 +252,19 @@ extension DJQTitlesView:DJQContentViewDelegate{
         sourceLabel.textColor = UIColor(r: seletedRGB.0 - deltaRGB.0 * progress, g: seletedRGB.1 - deltaRGB.1 * progress, b: seletedRGB.2 - deltaRGB.2 * progress)
         
         targetLabel.textColor = UIColor(r: nornalRGB.0 + deltaRGB.0 * progress , g: nornalRGB.1 + deltaRGB.1 * progress, b: nornalRGB.2 + deltaRGB.2 * progress)
-
+        
+        
+        
+        if style.isShowScrollLine {
+            
+            let deltaX = targetLabel.frame.origin.x - sourceLabel.frame.origin.x
+            let deltaW = targetLabel.frame.width - sourceLabel.frame.width
+            
+            scrollLine.frame.size.width = sourceLabel.frame.width + deltaW * progress
+            scrollLine.frame.origin.x = sourceLabel.frame.origin.x + deltaX * progress
+            
+        }
+        
     }
 }
 

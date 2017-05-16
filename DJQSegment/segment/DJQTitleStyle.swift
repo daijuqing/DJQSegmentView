@@ -19,5 +19,11 @@ class DJQTitleStyle{
     
     var iteamMargin : CGFloat = 30//间隔
     
+    var isShowScrollLine = true
+    var scrollLineHeight : CGFloat = 2
+    var scrollLineColor = UIColor.black
+    
+    
+    
     
 }
