@@ -57,21 +57,21 @@ extension UIColor {
     
     class func getRGBdelta(firstRGBColor:UIColor , secondRGBColor : UIColor) -> (rDetal:CGFloat , gDetal:CGFloat,bDetal:CGFloat ){
         
-        let firstComponets = getRGB(firstRGBColor)
+        let firstCmps = firstRGBColor.getRGB()
         
-        let secondComponets = getRGB(secondRGBColor)
+        let secondCmps = secondRGBColor.getRGB()
         
-        return (firstComponets().0 - secondComponets().0 , firstComponets().1 - secondComponets().1 , firstComponets().2 - secondComponets().2)
+        return (firstCmps.0 - secondCmps.0 , firstCmps.1 - secondCmps.1 , firstCmps.2 - secondCmps.2)
     }
     
       func getRGB() -> (CGFloat,CGFloat,CGFloat){
         
-        guard let cmpt = cgColor.components else {
+        guard let cmps = cgColor.components else {
             
             fatalError("必须为RGB格式")
             
         }
         
-        return (cmpt[0] * 255, cmpt[1] * 255 , cmpt[2] * 255)
+        return (cmps[0] * 255, cmps[1] * 255 , cmps[2] * 255)
     }
 }

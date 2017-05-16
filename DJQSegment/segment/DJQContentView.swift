@@ -148,11 +148,19 @@ extension DJQContentView:UICollectionViewDelegate{
         
         var targetIndex = 0
         var progress: CGFloat = 0.0
-        let currentIndex = NSInteger(statOffset / scrollView.bounds.width)
+        let currentIndex = NSInteger(statOffset  / scrollView.bounds.width)
 
-        progress = CGFloat(fabsf(Float(CGFloat(statOffset - scrollView.contentOffset.x)))) / scrollView.bounds.width
+        
+        
+        
+        
 
         if statOffset < scrollView.contentOffset.x {//左滑
+            
+            
+            progress = (scrollView.contentOffset.x - statOffset)/scrollView.bounds.width
+            
+            
             targetIndex = currentIndex + 1
 
             if targetIndex > childVcs.count - 1 {
@@ -163,8 +171,7 @@ extension DJQContentView:UICollectionViewDelegate{
             
         }else{//右滑
             
-            
-          
+            progress =  (statOffset - scrollView.contentOffset.x)/scrollView.bounds.width
             targetIndex = currentIndex - 1
             
             if targetIndex < 0 {
@@ -174,7 +181,12 @@ extension DJQContentView:UICollectionViewDelegate{
         }
         
         
-        
+        print(progress)
+
+        guard progress < 1 else {
+            
+            return
+        }
         
         contentDelegate.contentView(self, targetIndex: targetIndex, progress: progress)
     }

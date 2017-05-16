@@ -151,12 +151,15 @@ extension DJQTitlesView{
         
         
         let sourceLabel = titleLabels[currentIndex]
+        
+        print("currentIndex",currentIndex)
+
         let targetLabel = titleLabels[targetIndex]
         
-//        if (sourceLabel.tag != targetIndex) {
-        sourceLabel.textColor = style.normalColor
         targetLabel.textColor = style.seletedColor
-//        }
+
+        sourceLabel.textColor = style.normalColor
+        
         
         
         
@@ -182,7 +185,6 @@ extension DJQTitlesView{
             scrollView.setContentOffset(CGPoint( x : offsetX, y :0), animated: true)
             
         }
-        
             currentIndex = targetIndex
 
     }
@@ -199,18 +201,22 @@ extension DJQTitlesView:DJQContentViewDelegate{
         adjustTitlelabel(targetIndex: targetIndex)
     }
     
-    func contentView(_ contentView: DJQContentView, targetIndex: NSInteger, progress: CGFloat) { 
+    func contentView(_ contentView: DJQContentView, targetIndex: NSInteger, progress: CGFloat) {
         
-        let sourceLabel = titleLabels[currentIndex]
+       
+        
         let targetLabel = titleLabels[targetIndex]
+        let sourceLabel = titleLabels[currentIndex]
         
         let deltaRGB = UIColor.getRGBdelta(firstRGBColor: style.seletedColor, secondRGBColor: style.normalColor)
-        let sourceRGB = UIColor.getRGB(style.normalColor)
-        let currentRGB = UIColor.getRGB(style.seletedColor)
+        let nornalRGB = style.normalColor.getRGB()
+        let seletedRGB = style.seletedColor.getRGB()
         
-        targetLabel.textColor = UIColor(r: sourceRGB().0 + deltaRGB.0 * progress , g: sourceRGB().1 + deltaRGB.1 * progress, b: sourceRGB().2 + deltaRGB.2 * progress)
+        
+        sourceLabel.textColor = UIColor(r: seletedRGB.0 - deltaRGB.0 * progress, g: seletedRGB.1 - deltaRGB.1 * progress, b: seletedRGB.2 - deltaRGB.2 * progress)
+        
+        targetLabel.textColor = UIColor(r: nornalRGB.0 + deltaRGB.0 * progress , g: nornalRGB.1 + deltaRGB.1 * progress, b: nornalRGB.2 + deltaRGB.2 * progress)
 
-        sourceLabel.textColor = UIColor(r: currentRGB().0 - deltaRGB.0 * progress, g: currentRGB().1 - deltaRGB.1 * progress, b: currentRGB().2 - deltaRGB.2 * progress)
     }
 }
 
